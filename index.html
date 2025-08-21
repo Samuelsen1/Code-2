@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #1e272e;
+            --light-dark: #2d3436;
+            --light: #dfe6e9;
+            --text: #f5f6fa;
+            --success: #00b894;
+            --danger: #d63031;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark), #000);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn i {
+            font-size: 16px;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 30px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .playlists {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .playlists li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .playlists li:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .playlists li.active {
+            background: var(--primary);
+        }
+
+        .playlists li i {
+            font-size: 16px;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .now-playing {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .now-playing h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .now-playing h2 i {
+            color: var(--primary);
+        }
+
+        .song-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .album-art {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .song-details {
+            flex: 1;
+        }
+
+        .song-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .song-artist {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .song-album {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-time {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress {
+            height: 100%;
+            width: 30%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .control-btn.play-pause {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            font-size: 20px;
+        }
+
+        .control-btn.play-pause:hover {
+            background: var(--secondary);
+        }
+
+        .playlist-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .playlist-header h2 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .playlist-header h2 i {
+            color: var(--primary);
+        }
+
+        .add-music-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .add-music-btn:hover {
+            background: #00a382;
+        }
+
+        .songs-list {
+            list-style: none;
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .song-item.active {
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .song-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .song-item-info {
+            flex: 1;
+        }
+
+        .song-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .song-item-artist {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .song-item-duration {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0 15px;
+        }
+
+        .song-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .song-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-music"></i>
+                <h1>Harmony Player</h1>
+            </div>
+            <nav>
+                <button class="nav-btn"><i class="fas fa-home"></i> Home</button>
+                <button class="nav-btn"><i class="fas fa-search"></i> Browse</button>
+                <button class="nav-btn"><i class="fas fa-heart"></i> Favorites</button>
+                <button class="nav-btn"><i class="fas fa-cog"></i> Settings</button>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h2><i class="fas fa-list"></i> Your Library</h2>
+                <ul class="playlists">
+                    <li class="active"><i class="fas fa-music"></i> Recently Played</li>
+                    <li><i class="fas fa-heart"></i> Favorite Songs</li>
+                    <li><i class="fas fa-clock"></i> Recently Added</li>
+                    <li><i class="fas fa-record-vinyl"></i> Albums</li>
+                    <li><i class="fas fa-users"></i> Artists</li>
+                </ul>
+
+                <h2><i class="fas fa-headphones"></i> Your Playlists</h2>
+                <ul class="playlists">
+                    <li><i class="fas fa-list"></i> Chill Vibes</li>
+                    <li><i class="fas fa-list"></i> Workout Mix</li>
+                    <li><i class="fas fa-list"></i> Road Trip</li>
+                    <li><i class="fas fa-list"></i> Party Time</li>
+                    <li><i class="fas fa-plus-circle"></i> Create New</li>
+                </ul>
+            </div>
+
+            <div class="content">
+                <div class="now-playing">
+                    <h2><i class="fas fa-play-circle"></i> Now Playing</h2>
+                    <div class="song-info">
+                        <div class="album-art">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Album Art">
+                        </div>
+                        <div class="song-details">
+                            <div class="song-title">Electric Dreams</div>
+                            <div class="song-artist">The Sound Waves</div>
+                            <div class="song-album">Neon Nights • 2023</div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-time">
+                            <span>1:20</span>
+                            <span>4:30</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <div class="control-buttons">
+                            <button class="control-btn"><i class="fas fa-random"></i></button>
+                            <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                            <button class="control-btn play-pause"><i class="fas fa-pause"></i></button>
+                            <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                            <button class="control-btn"><i class="fas fa-redo"></i></button>
+                        </div>
+                        <div class="control-buttons">
+                            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="playlist-section">
+                    <div class="playlist-header">
+                        <h2><i class="fas fa-list-ol"></i> Current Playlist</h2>
+                        <button class="add-music-btn"><i class="fas fa-plus"></i> Add Music</button>
+                    </div>
+                    <ul class="songs-list">
+                        <li class="song-item active">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Song">
+                            <div class="song-item-info">
+                                <div class="song-item-title">Electric Dreams</div>
+                                <div class="song-item-artist">The Sound Waves</div>
+                            </div>
+                            <div class="song-item-duration">4:30</div>
+                            <div class="song-item-actions">
+                                <button class="action-btn"><i class="fas fa-heart"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </li>
+                        <li class="song-item">
+                            <img src="https://images.unsplash.com/photo-1571330735066-03aaa9429d89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Song">
+                            <div class="song-item-info">
+                                <div class="song-item-title">Midnight Groove</div>
+                                <div class="song-item-artist">Jazz Collective</div>
+                            </div>
+                            <div class="song-item-duration">3:45</div>
+                            <div class="song-item-actions">
+                                <button class="action-btn"><i class="far fa-heart"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </li>
+                        <li class="song-item">
+                            <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Song">
+                            <div class="song-item-info">
+                                <div class="song-item-title">Summer Breeze</div>
+                                <div class="song-item-artist">Coastal Band</div>
+                            </div>
+                            <div class="song-item-duration">3:20</div>
+                            <div class="song-item-actions">
+                                <button class="action-btn"><i class="far fa-heart"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </li>
+                        <li class="song-item">
+                            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Song">
+                            <div class="song-item-info">
+                                <div class="song-item-title">Urban Rhythm</div>
+                                <div class="song-item-artist">City Beats</div>
+                            </div>
+                            <div class="song-item-duration">5:12</div>
+                            <div class="song-item-actions">
+                                <button class="action-btn"><i class="far fa-heart"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </li>
+                        <li class="song-item">
+                            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Song">
+                            <div class="song-item-info">
+                                <div class="song-item-title">Mountain Echo</div>
+                                <div class="song-item-artist">Natural Sounds</div>
+                            </div>
+                            <div class="song-item-duration">4:05</div>
+                            <div class="song-item-actions">
+                                <button class="action-btn"><i class="far fa-heart"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2023 Harmony Music Player | Designed with <i class="fas fa-heart" style="color: var(--danger);"></i> for music lovers</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Play/Pause functionality
+            const playPauseBtn = document.querySelector('.play-pause');
+            let isPlaying = true;
+            
+            playPauseBtn.addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                if (isPlaying) {
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            
+            // Progress bar interaction
+            const progressBar = document.querySelector('.progress-bar');
+            const progress = document.querySelector('.progress');
+            
+            progressBar.addEventListener('click', function(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const progressWidth = (clickX / width) * 100;
+                progress.style.width = progressWidth + '%';
+            });
+            
+            // Song selection
+            const songItems = document.querySelectorAll('.song-item');
+            
+            songItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all songs
+                    songItems.forEach(song => song.classList.remove('active'));
+                    // Add active class to clicked song
+                    this.classList.add('active');
+                    
+                    // Update now playing info
+                    const songTitle = this.querySelector('.song-item-title').textContent;
+                    const songArtist = this.querySelector('.song-item-artist').textContent;
+                    const albumArt = this.querySelector('img').src;
+                    
+                    document.querySelector('.song-title').textContent = songTitle;
+                    document.querySelector('.song-artist').textContent = songArtist;
+                    document.querySelector('.album-art img').src = albumArt;
+                    
+                    // Reset and start playing
+                    progress.style.width = '0%';
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    isPlaying = true;
+                    
+                    // Simulate progress
+                    simulatePlayback();
+                });
+            });
+            
+            // Simulate playback progress
+            function simulatePlayback() {
+                let width = 0;
+                if (isPlaying) {
+                    const interval = setInterval(() => {
+                        if (width >= 100 || !isPlaying) {
+                            clearInterval(interval);
+                        } else {
+                            width += 0.5;
+                            progress.style.width = width + '%';
+                        }
+                    }, 100);
+                }
+            }
+            
+            // Initialize playback simulation
+            simulatePlayback();
+            
+            // Favorite button functionality
+            const favButtons = document.querySelectorAll('.action-btn:first-child');
+            
+            favButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                });
+            });
+            
+            // Navigation buttons
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert(`Navigating to: ${this.textContent.trim()}`);
+                });
+            });
+            
+            // Add music button
+            const addMusicBtn = document.querySelector('.add-music-btn');
+            
+            addMusicBtn.addEventListener('click', function() {
+                alert('Add music functionality would open a file dialog here');
+            });
+        });
+    </script>
+</body>
+</html>
